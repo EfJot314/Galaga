@@ -36,8 +36,8 @@ public class Player {
 
     private GameEngine engine;
 
-    Instant start;
-    Instant end;
+    private Instant start;
+    private Instant end;
 
 
     public Player(GameEngine engine) throws IOException {
@@ -93,6 +93,7 @@ public class Player {
 
 
     public boolean isDead(){
+
         return (this.hp <= 0);
     }
 
@@ -120,7 +121,7 @@ public class Player {
         //strzelam
         if(this.fire){
             this.end = Instant.now();
-            if(Duration.between(start, end).toMillis() > 500){
+            if(Duration.between(this.start, this.end).toMillis() > 500){
                 this.start = Instant.now();
                 Bullet bullet = new Bullet(this.position.x, this.position.y, 10, this.engine);
 

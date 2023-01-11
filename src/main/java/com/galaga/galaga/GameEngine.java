@@ -1,5 +1,6 @@
 package com.galaga.galaga;
 
+import galaga.Vector2d;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameEngine extends Thread{
     private Pane pane;
@@ -25,6 +27,14 @@ public class GameEngine extends Thread{
     private List<Bullet> bulletTab;
     private List<Bullet> toRemove;
 
+    private List<Enemy> enemyTab;
+    private List<Enemy> deadEnemies;
+
+    private int enemiesWidth = 4;
+    private int enemiesHeight = 4;
+    private galaga.Vector2d[][] positionsTab;
+    private boolean[][] occupiedTab;
+
     private Timeline tl;
 
 
@@ -33,6 +43,26 @@ public class GameEngine extends Thread{
         this.scene = s;
         this.bulletTab = new ArrayList<>();
         this.player = new Player(this);
+
+        //wielkosc miejsca dla enemy
+        float w = 40;
+        this.enemyTab = new ArrayList<>();
+        this.positionsTab = new Vector2d[this.enemiesWidth][this.enemiesHeight];
+        this.occupiedTab = new boolean[this.enemiesWidth][this.enemiesHeight];
+        float dx = (float)(this.scene.getWidth()/2-w*this.enemiesWidth/2);
+        float dy = 100;
+        for(int x=0;x<this.enemiesWidth;x++){
+            for(int y=0;y<this.enemiesHeight;y++){
+                this.positionsTab[x][y] = new Vector2d(dx+w*x+w/2, dy+y*w+w/2);
+                this.occupiedTab[x][y] = false;
+            }
+        }
+
+        //testowe enemy
+        for(int i=0;i<10;i++){
+            this.createEnemy();
+
+        }
 
     }
 
@@ -46,12 +76,35 @@ public class GameEngine extends Thread{
 
     public void addBullet(Bullet bullet){
         this.bulletTab.add(bullet);
-
     }
 
     public void removeBullet(Bullet bullet){
         this.bulletTab.remove(bullet);
     }
+
+
+    private void createEnemy(){
+        //szukanie miejsca
+        int x=0;
+        int y =0;
+        boolean notFound = true;
+        while(notFound && this.enemyTab.size() < this.enemiesHeight*this.enemiesWidth){
+            x = this.randomInt(0, this.enemiesWidth-1);
+            y = this.randomInt(0, this.enemiesHeight-1);
+            notFound = this.occupiedTab[x][y];
+        }
+
+        //tworzenie zachowania
+        Behavior behavior = new Behavior(null);
+
+        //tworzenie wroga
+        Enemy newEnemy = new Enemy(this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        this.occupiedTab[x][y] = true;
+        this.enemyTab.add(newEnemy);
+    }
+
+
+
 
     private void mainLoop() throws IOException {
 
@@ -67,6 +120,8 @@ public class GameEngine extends Thread{
         for(Bullet b : toRemove){
             this.bulletTab.remove(b);
         }
+
+
 
         //gracz sie rusza
         player.move();
@@ -84,6 +139,12 @@ public class GameEngine extends Thread{
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
 
+    }
+
+    //funkcja zwraca pseudolosowa liczbe calkowita z przedzialu <min, max>
+    public int randomInt(int min, int max){
+        Random rand = new Random();
+        return rand.nextInt((max - min) + 1) + min;
     }
 
 

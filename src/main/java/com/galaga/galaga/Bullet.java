@@ -34,6 +34,8 @@ public class Bullet {
         this.sprite = new ImageView(img);
         this.sprite.setPreserveRatio(true);
         this.sprite.setFitWidth(4);
+        this.sprite.setX(this.position.x-this.width/2);
+        this.sprite.setY(this.position.y);
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
         this.engine = engine;
