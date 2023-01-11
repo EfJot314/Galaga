@@ -13,6 +13,8 @@ import javafx.scene.shape.Circle;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Player {
 
@@ -24,6 +26,7 @@ public class Player {
 
     private boolean isA = false;
     private boolean isD = false;
+    private boolean fire = false;
 
     private float width;
     private float height;
@@ -31,8 +34,22 @@ public class Player {
     private float sceneWidth;
     private float sceneHeight;
 
+    private GameEngine engine;
 
-    public Player(Pane pane, Scene scene) throws IOException {
+    Instant start;
+    Instant end;
+
+
+    public Player(GameEngine engine) throws IOException {
+
+        this.start = Instant.now();
+
+        this.engine = engine;
+
+        Scene scene = this.engine.getScene();
+        Pane pane = this.engine.getPane();
+
+
         //dane ekranu
         this.sceneWidth = (float)scene.getWidth();
         this.sceneHeight = (float)scene.getHeight();
@@ -51,12 +68,15 @@ public class Player {
         //dodaje gracza na ekran
         pane.getChildren().addAll(this.sprite);
 
+
         //obsluga klawiatury
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             if(key.getCode() == KeyCode.A){
                 isA = true;
             } else if (key.getCode()==KeyCode.D) {
                 isD = true;
+            } else if (key.getCode()==KeyCode.SPACE) {
+                fire = true;
             }
         });
         scene.addEventHandler(KeyEvent.KEY_RELEASED, (key) -> {
@@ -64,6 +84,8 @@ public class Player {
                 isA = false;
             } else if (key.getCode()==KeyCode.D) {
                 isD = false;
+            } else if (key.getCode()==KeyCode.SPACE) {
+                fire = false;
             }
         });
 
@@ -76,7 +98,7 @@ public class Player {
 
 
 
-    public void move(){
+    public void move() throws IOException {
         Vector2d dpos = new Vector2d(0,0);
 
         if(isA && this.position.x-this.width/2 > 0){
@@ -95,8 +117,15 @@ public class Player {
         this.sprite.setX(x);
         this.sprite.setY(y);
 
+        //strzelam
+        if(this.fire){
+            this.end = Instant.now();
+            if(Duration.between(start, end).toMillis() > 500){
+                this.start = Instant.now();
+                Bullet bullet = new Bullet(this.position.x, this.position.y, 10, this.engine);
 
-
+            }
+        }
 
 
     }

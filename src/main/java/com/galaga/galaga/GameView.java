@@ -1,7 +1,11 @@
 package com.galaga.galaga;
 
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -21,7 +25,7 @@ public class GameView extends Thread{
 
         Pane pane = new Pane();
         scene = new Scene(pane, 500, 700);
-
+        pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
         engine = new GameEngine(pane, scene);
 
 
@@ -30,6 +34,8 @@ public class GameView extends Thread{
 
         stage.setTitle("Galaga");
         stage.setScene(scene);
+        stage.setResizable(false);
+
         stage.show();
 
     }
