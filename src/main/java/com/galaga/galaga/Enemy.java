@@ -7,11 +7,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
+import java.util.List;
 
 
-public class Enemy {
+public class Enemy implements GameObject{
 
     private GameEngine engine;
+    private Collider collider;
+
     private Vector2d position;
     private Vector2d dockPosition;
     private Vector2d velocity;
@@ -39,6 +42,8 @@ public class Enemy {
 
         this.position = startPosition;
 
+        this.rotation = 0;
+
         this.dockPosition = dockPosition;
 
         this.velocity = new Vector2d(0, 4);
@@ -56,11 +61,15 @@ public class Enemy {
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
 
+        //tworze collider
+        this.collider = new Collider(this.position,
+                                    this.position.add(new Vector2d(this.width/2, this.height)),
+                                    this.position.add(new Vector2d(this.width,0)), this.rotation);
+
 
 
         this.engine.getPane().getChildren().addAll(this.sprite);
     }
-
 
     public void moveShip(){
         //zmieniam pozycje-przesuwam sie
@@ -87,7 +96,6 @@ public class Enemy {
         this.sprite.setX(this.position.x);
         this.sprite.setY(this.position.y);
     }
-
 
 
     public void move(){
@@ -181,11 +189,32 @@ public class Enemy {
 
 
 
-
+        //update collidera
+        this.collider.update(this.position, this.rotation);
 
     }
 
 
+    public boolean checkHit(List<GameObject> objects) {
+        for(GameObject object : objects){
+            if(this != object && this.collider.isCollision(object.getCollider())){
+                //jesli jest to pocisk od sojusznika, to nie jest szkodliwy
+                if(1 != object.getAlliance()){
+                    this.engine.getPane().getChildren().remove(this.sprite);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int getAlliance(){
+        return 1;
+    }
+
+    public Collider getCollider(){
+        return this.collider;
+    }
 
 
 }

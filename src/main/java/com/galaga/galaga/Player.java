@@ -15,8 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
-public class Player {
+public class Player implements GameObject{
 
     private int hp = 3;
 
@@ -27,6 +28,7 @@ public class Player {
     private boolean isA = false;
     private boolean isD = false;
     private boolean fire = false;
+    private float fireDuration = 300;
 
     private float width;
     private float height;
@@ -35,6 +37,8 @@ public class Player {
     private float sceneHeight;
 
     private GameEngine engine;
+
+    private Collider collider;
 
     private Instant start;
     private Instant end;
@@ -68,6 +72,11 @@ public class Player {
         //dodaje gracza na ekran
         pane.getChildren().addAll(this.sprite);
 
+        //dodaje collider
+        this.collider = new Collider(this.position,
+                this.position.add(new Vector2d(this.width/2, this.height)),
+                this.position.add(new Vector2d(this.width,0)), 0);
+
 
         //obsluga klawiatury
         scene.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
@@ -93,13 +102,12 @@ public class Player {
 
 
     public boolean isDead(){
-
         return (this.hp <= 0);
     }
 
 
 
-    public void move() throws IOException {
+    public void move(){
         Vector2d dpos = new Vector2d(0,0);
 
         if(isA && this.position.x-this.width/2 > 0){
@@ -121,14 +129,40 @@ public class Player {
         //strzelam
         if(this.fire){
             this.end = Instant.now();
-            if(Duration.between(this.start, this.end).toMillis() > 500){
+            if(Duration.between(this.start, this.end).toMillis() > this.fireDuration){
                 this.start = Instant.now();
-                Bullet bullet = new Bullet(this.position.x, this.position.y, 10, this.engine);
+                try {
+                    Bullet bullet = new Bullet(this.position.x, this.position.y, 10, 0, this.engine);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
 
             }
         }
 
+        //update collidera
+        this.collider.update(this.position, 0);
 
+
+    }
+
+
+    public boolean checkHit(List<GameObject> objects) {
+        for(GameObject object : objects){
+            if(this != object && this.collider.isCollision(object.getCollider())){
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public Collider getCollider(){
+        return this.collider;
+    }
+
+    public int getAlliance(){
+        return 0;
     }
 
 

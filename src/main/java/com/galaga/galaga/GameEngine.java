@@ -24,14 +24,13 @@ public class GameEngine extends Thread{
     private Scene scene;
     private Player player;
 
-    private List<Bullet> bulletTab;
-    private List<Bullet> toRemove;
-
-    private List<Enemy> enemyTab;
-    private List<Enemy> deadEnemies;
+    private List<GameObject> allObjects;
+    private List<GameObject> toAdd;
+    private List<GameObject> toRemove;
 
     private int enemiesWidth = 4;
     private int enemiesHeight = 4;
+    private int nOfEnemies = 0;
     private galaga.Vector2d[][] positionsTab;
     private boolean[][] occupiedTab;
 
@@ -41,12 +40,16 @@ public class GameEngine extends Thread{
     public GameEngine(Pane p, Scene s) throws IOException {
         this.pane = p;
         this.scene = s;
-        this.bulletTab = new ArrayList<>();
+
+        this.allObjects = new ArrayList<>();
+        this.toAdd = new ArrayList<>();
+        this.toRemove = new ArrayList<>();
+
         this.player = new Player(this);
+        this.allObjects.add(player);
 
         //wielkosc miejsca dla enemy
         float w = 40;
-        this.enemyTab = new ArrayList<>();
         this.positionsTab = new Vector2d[this.enemiesWidth][this.enemiesHeight];
         this.occupiedTab = new boolean[this.enemiesWidth][this.enemiesHeight];
         float dx = (float)(this.scene.getWidth()/2-w*this.enemiesWidth/2);
@@ -75,11 +78,11 @@ public class GameEngine extends Thread{
     }
 
     public void addBullet(Bullet bullet){
-        this.bulletTab.add(bullet);
+        this.toAdd.add(bullet);
     }
 
     public void removeBullet(Bullet bullet){
-        this.bulletTab.remove(bullet);
+        this.toRemove.remove(bullet);
     }
 
 
@@ -88,7 +91,7 @@ public class GameEngine extends Thread{
         int x=0;
         int y =0;
         boolean notFound = true;
-        while(notFound && this.enemyTab.size() < this.enemiesHeight*this.enemiesWidth){
+        while(notFound && this.nOfEnemies < this.enemiesHeight*this.enemiesWidth){
             x = this.randomInt(0, this.enemiesWidth-1);
             y = this.randomInt(0, this.enemiesHeight-1);
             notFound = this.occupiedTab[x][y];
@@ -100,7 +103,8 @@ public class GameEngine extends Thread{
         //tworzenie wroga
         Enemy newEnemy = new Enemy(new Vector2d(0,0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
         this.occupiedTab[x][y] = true;
-        this.enemyTab.add(newEnemy);
+        this.toAdd.add(newEnemy);
+        nOfEnemies += 1;
     }
 
 
@@ -108,26 +112,29 @@ public class GameEngine extends Thread{
 
     private void mainLoop() throws IOException {
 
-        //pociski sie ruszaja
-        this.toRemove = new ArrayList<>();
-        for(Bullet b : bulletTab){
-            b.move();
-            if(b.isHit()){
-                this.toRemove.add(b);
+        //wszystko sie ruszaja
+        for(GameObject object : allObjects){
+            object.move();
+        }
+        //uruchamianie colliderow
+        for(GameObject object : allObjects){
+            if(object.checkHit(allObjects)){
+                this.toRemove.add(object);
             }
         }
-        //usuwam niepotrzebne
-        for(Bullet b : toRemove){
-            this.bulletTab.remove(b);
+        //dodawanie nowych
+        for(GameObject object : toAdd){
+            this.allObjects.add(object);
+        }
+        //usuwanie zmarlych
+        for(GameObject object : toRemove){
+            this.allObjects.remove(object);
         }
 
-        //przeciwnicy sie ruszaja
-        for(Enemy enemy : enemyTab){
-            enemy.move();
-        }
+        this.toAdd = new ArrayList<>();
+        this.toRemove = new ArrayList<>();
 
-        //gracz sie rusza
-        player.move();
+
 
     }
 
