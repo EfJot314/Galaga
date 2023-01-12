@@ -31,6 +31,17 @@ public class Vector2d {
         return ((this.x == v2.x) && (this.y == v2.y));
     }
 
+    public float angle(Vector2d v2){
+        float x1 = this.x;
+        float y1 = this.y;
+        float x2 = v2.x;
+        float y2 = v2.y;
+
+        float cos = 0;      //TODO
+
+        return (float)Math.acos(cos);
+    }
+
     public String toString(){
         String toReturn = "";
         toReturn += "[";

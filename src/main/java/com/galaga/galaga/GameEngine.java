@@ -98,7 +98,7 @@ public class GameEngine extends Thread{
         Behavior behavior = new Behavior(null);
 
         //tworzenie wroga
-        Enemy newEnemy = new Enemy(this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        Enemy newEnemy = new Enemy(new Vector2d(0,0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
         this.occupiedTab[x][y] = true;
         this.enemyTab.add(newEnemy);
     }
@@ -121,7 +121,10 @@ public class GameEngine extends Thread{
             this.bulletTab.remove(b);
         }
 
-
+        //przeciwnicy sie ruszaja
+        for(Enemy enemy : enemyTab){
+            enemy.move();
+        }
 
         //gracz sie rusza
         player.move();

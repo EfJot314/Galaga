@@ -1,7 +1,6 @@
 package com.galaga.galaga;
 
 /*
-
 Lista akcji:
  0 - stanie w miejscu
  1 - lot na wprost
@@ -31,5 +30,12 @@ public class Action{
 
     public float getDuration(){
         return this.time;
+    }
+
+    public String toString(){
+        String toReturn = "";
+        toReturn += "action_num: "+this.actNum;
+        toReturn += ", duration: "+this.time;
+        return toReturn;
     }
 }

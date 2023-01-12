@@ -13,7 +13,7 @@ public class Behavior {
     private List<Action> actions;
 
     private int behaviorLen = 20;
-    private int index = -1;
+    private int index = 0;
 
     private Instant start;
     private Instant end;
@@ -29,16 +29,49 @@ public class Behavior {
             for(int i=0;i<(this.behaviorLen-startActions.size());i++){
                 int action = randomInt(0, 6);
                 int duration = randomInt(190, 210);
+                //jesli wczesniej lecialem na miejsce to chce tam troche posiedziec
+                if(this.actions.size() > 1){
+                    if(this.actions.get(i-1).getAction() == 2){
+                        action = 0;
+                    }
+                }
+                //jesli lece na swoje miejsce to chce tam doleciec, wiec ustawiam czas trwania na duzy, aby na pewno dolecial
+                //jk doleci to bedzie sobie tam siedzial tak jakby bylo 0
+                if(action == 2){
+                    duration = 10000;
+                    //jezeli przed chwila stalem albo lecialem w to miejsce to nie chce zeby sie to powtarzalo, wiec ustawiam czas na krotki
+                    if(this.actions.size() > 1){
+                        if(this.actions.get(i-1).getAction() == 2 || this.actions.get(i-1).getAction() == 0){
+                            duration = 10;
+                        }
+                    }
+                }
                 Action newAction = new Action(action, duration);
                 this.actions.add(newAction);
             }
         }
         //jesli nic mi nie podano
         else{
-
             for(int i=0;i<this.behaviorLen;i++){
                 int action = randomInt(0, 6);
                 int duration = randomInt(190, 210);
+                //jesli wczesniej lecialem na miejsce to chce tam troche posiedziec
+                if(i >= 1){
+                    if(this.actions.get(i-1).getAction() == 2){
+                        action = 0;
+                    }
+                }
+                //jesli lece na swoje miejsce to chce tam doleciec, wiec ustawiam czas trwania na duzy, aby na pewno dolecial
+                //jk doleci to bedzie sobie tam siedzial tak jakby bylo 0
+                if(action == 2){
+                    duration = 10000;
+                    //jezeli przed chwila stalem albo lecialem w to miejsce to nie chce zeby sie to powtarzalo, wiec ustawiam czas na krotki
+                    if(i >= 1){
+                        if(this.actions.get(i-1).getAction() == 2 || this.actions.get(i-1).getAction() == 0){
+                            duration = 10;
+                        }
+                    }
+                }
                 Action newAction = new Action(action, duration);
                 this.actions.add(newAction);
             }
