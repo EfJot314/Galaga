@@ -59,7 +59,7 @@ public class GameEngine extends Thread{
         }
 
         //testowe enemy
-        for(int i=0;i<10;i++){
+        for(int i=0;i<3;i++){
             this.createEnemy();
 
         }
@@ -83,7 +83,7 @@ public class GameEngine extends Thread{
     }
 
 
-    private void createEnemy(){
+    private void createEnemy() throws IOException {
         //szukanie miejsca
         int x=0;
         int y =0;

@@ -13,7 +13,7 @@ public class Behavior {
     private List<Action> actions;
 
     private int behaviorLen = 20;
-    private int index = 0;
+    private int index = -1;
 
     private Instant start;
     private Instant end;
@@ -28,7 +28,7 @@ public class Behavior {
             }
             for(int i=0;i<(this.behaviorLen-startActions.size());i++){
                 int action = randomInt(0, 6);
-                int duration = randomInt(190, 210);
+                int duration = randomInt(490, 510);
                 //jesli wczesniej lecialem na miejsce to chce tam troche posiedziec
                 if(this.actions.size() > 1){
                     if(this.actions.get(i-1).getAction() == 2){
@@ -53,8 +53,8 @@ public class Behavior {
         //jesli nic mi nie podano
         else{
             for(int i=0;i<this.behaviorLen;i++){
-                int action = randomInt(0, 6);
-                int duration = randomInt(190, 210);
+                int action = randomInt(1, 6);
+                int duration = randomInt(200, 1000);
                 //jesli wczesniej lecialem na miejsce to chce tam troche posiedziec
                 if(i >= 1){
                     if(this.actions.get(i-1).getAction() == 2){
@@ -62,9 +62,9 @@ public class Behavior {
                     }
                 }
                 //jesli lece na swoje miejsce to chce tam doleciec, wiec ustawiam czas trwania na duzy, aby na pewno dolecial
-                //jk doleci to bedzie sobie tam siedzial tak jakby bylo 0
+                //jak doleci to bedzie sobie tam siedzial tak jakby bylo 0
                 if(action == 2){
-                    duration = 10000;
+                    duration = 3000;
                     //jezeli przed chwila stalem albo lecialem w to miejsce to nie chce zeby sie to powtarzalo, wiec ustawiam czas na krotki
                     if(i >= 1){
                         if(this.actions.get(i-1).getAction() == 2 || this.actions.get(i-1).getAction() == 0){
@@ -85,14 +85,14 @@ public class Behavior {
         //jesli to dopiero poczatek istnienia tego obiektu/statku
         if(this.start == null){
             this.start = Instant.now();
-            toReturn = this.actions.get(this.index);
             this.index = (this.index+1)%this.behaviorLen;
+            toReturn = this.actions.get(this.index);
         }
         //jesli minal wyznaczony czas
         else if(Duration.between(this.start, this.end).toMillis() >= this.actions.get(this.index).getDuration()){
             this.start = Instant.now();
-            toReturn = this.actions.get(this.index);
             this.index = (this.index+1)%this.behaviorLen;
+            toReturn = this.actions.get(this.index);
         }
 
         //zwracam co mam

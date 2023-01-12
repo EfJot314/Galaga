@@ -1,5 +1,6 @@
 package com.galaga.galaga;
 
+import galaga.Vector2d;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ public class App extends Application {
         stage.setTitle("Galaga");
         stage.setScene(scene);
         stage.show();
+
     }
 
     public static void startGame() throws IOException {
