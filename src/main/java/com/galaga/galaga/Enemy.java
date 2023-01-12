@@ -118,19 +118,28 @@ public class Enemy {
             this.moveShip();
 
         }
+
         else if(action == 2){
             //powrot do przydzielonego miejsca
             Vector2d returning = new Vector2d(this.dockPosition.x-this.position.x, this.dockPosition.y-this.position.y);
             float angle = this.velocity.angleBetween(returning);
             //jesli kierunek ruchu sie nie pokrywa z kierunkiem oczekiwanym, to skrecam
-            if(Math.abs(angle) > 0.1){
-                this.velocity = this.velocity.rotate(angle);
+            if(Math.abs(angle) > 0.2){
+                float phi = Math.min(Math.abs(angle), (float)(Math.toRadians(10)));;
+                if(angle > 0){
+                    phi = -phi;
+                }
+                this.velocity = this.velocity.rotate(phi);
             }
 
             //sprawdzam czy nie jestem na miejscu
             if(this.position.substract(this.dockPosition).module() <= 1.5*this.v){
                 this.velocity = new Vector2d(0, v);
-                this.rotation = 180;
+                //nic nie robie, ew sie obracam
+                if(this.rotation != 180){
+                    float phi = Math.min(180-this.rotation, 10);
+                    this.rotation += phi;
+                }
             }
             else{
                 //jesli nie to ruszam sie
@@ -160,9 +169,15 @@ public class Enemy {
             this.moveShip();
         }
         else{
-            //nic nie robie, tylko ustawiam rotacje
-            this.sprite.setRotate(this.rotation);
+            //nic nie robie, ew sie obracam
+            if(this.rotation != 180){
+                float phi = Math.min(180-this.rotation, 10);
+                this.rotation += phi;
+            }
         }
+
+        //ustawiam rotacje
+        this.sprite.setRotate(this.rotation);
 
 
 

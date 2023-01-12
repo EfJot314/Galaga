@@ -59,8 +59,10 @@ public class Vector2d {
 
     //zwraca wektor obrocony wzgledem aktualnego o 'angle' radianow
     public Vector2d rotate(float angle){
+
         float x2 = (float)(this.x*Math.cos(angle) - this.y*Math.sin(angle));
         float y2 = (float)(this.x*Math.sin(angle) + this.y*Math.cos(angle));
+
         return new Vector2d(x2, y2);
     }
 
