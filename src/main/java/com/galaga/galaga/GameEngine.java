@@ -62,7 +62,7 @@ public class GameEngine extends Thread{
         }
 
         //testowe enemy
-        for(int i=0;i<10;i++){
+        for(int i=0;i<3;i++){
             this.createEnemy();
 
         }

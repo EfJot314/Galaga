@@ -63,8 +63,8 @@ public class Enemy implements GameObject{
 
         //tworze collider
         this.collider = new Collider(this.position,
-                                    this.position.add(new Vector2d(this.width/2, this.height)),
-                                    this.position.add(new Vector2d(this.width,0)), this.rotation);
+                                    new Vector2d(this.width/2, this.height),
+                                    new Vector2d(this.width,0), this.rotation);
 
 
 

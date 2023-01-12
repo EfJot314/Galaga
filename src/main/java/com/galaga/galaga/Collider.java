@@ -14,14 +14,15 @@ public class Collider {
 
     public Collider(galaga.Vector2d position, Vector2d p1, Vector2d p2, float rotation){
         this.position = position;
-        this.v = p1.substract(this.position);
-        this.u = p2.substract(this.position);
+        this.v = p1;
+        this.u = p2;
         this.rotation = rotation;
     }
 
     public void update(Vector2d newPos, float rotation){
         this.position = newPos;
         this.rotation = rotation;
+
     }
 
 
@@ -64,6 +65,8 @@ public class Collider {
     public boolean isCollision(Collider collider){
         List<Vector2d> c1Tab = this.getVectors();
         List<Vector2d> c2Tab = collider.getVectors();
+
+
 
         //sprawdzam kazdy odcinek z kazdym
         for(int i=0;i<3;i++){
