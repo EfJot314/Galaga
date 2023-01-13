@@ -47,6 +47,7 @@ public class Bullet implements GameObject{
         this.sprite.setY(this.position.y);
 
         this.sprite.setFitWidth(4);
+        this.sprite.setFitHeight(40);
 
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
@@ -54,8 +55,8 @@ public class Bullet implements GameObject{
         this.engine = engine;
 
         this.collider = new Collider(this.position,
-                this.position.add(new Vector2d(this.width/2, this.height)),
-                this.position.add(new Vector2d(this.width,0)), this.rotation);
+                (new Vector2d(this.width/2, this.height)),
+                (new Vector2d(this.width,0)), this.rotation);
 
         this.engine.addBullet(this);
         this.engine.getPane().getChildren().addAll(this.sprite);

@@ -22,7 +22,7 @@ public class Collider {
     public void update(Vector2d newPos, float rotation){
         this.position = newPos;
         this.rotation = rotation;
-
+        //this.rotation = 0;
     }
 
 
@@ -78,7 +78,7 @@ public class Collider {
                 Vector2d p3 = c2Tab.get(j);
                 Vector2d p4 = c2Tab.get((j+1)%3);
 
-                //sprawdzam czy jakikolwiek odcinek sie przecinam jesli tak tzn ze na siebie nachodza
+                //sprawdzam czy jakikolwiek odcinek sie przecina, jesli tak tzn ze na siebie nachodza
                 if(this.intersect(p1,p2,p3,p4)){
                     return true;
                 }
@@ -87,6 +87,17 @@ public class Collider {
 
         return false;
     }
+
+
+
+    public String toString(){
+        String toReturn = "";
+        toReturn += "pos: "+this.position.toString();
+        toReturn += ", v: "+this.v.toString();
+        toReturn += ", u: "+this.u.toString();
+        return toReturn;
+    }
+
 
 
 

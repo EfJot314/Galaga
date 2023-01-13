@@ -64,6 +64,7 @@ public class Player implements GameObject{
         this.sprite = new ImageView(img);
         this.sprite.setPreserveRatio(true);
         this.sprite.setFitWidth(30);
+        this.sprite.setFitHeight(30);
 
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
@@ -74,8 +75,8 @@ public class Player implements GameObject{
 
         //dodaje collider
         this.collider = new Collider(this.position,
-                this.position.add(new Vector2d(this.width/2, this.height)),
-                this.position.add(new Vector2d(this.width,0)), 0);
+                (new Vector2d(this.width/2, this.height)),
+                (new Vector2d(this.width,0)), 0);
 
 
         //obsluga klawiatury

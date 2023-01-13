@@ -57,6 +57,7 @@ public class Enemy implements GameObject{
         this.sprite = new ImageView(img);
         this.sprite.setPreserveRatio(true);
         this.sprite.setFitWidth(20);
+        this.sprite.setFitHeight(20);
 
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
