@@ -32,11 +32,11 @@ public class Bullet implements GameObject{
     private float rotation;
     private int allience;
 
-    public Bullet(float x, float y, float velocity, int allience, GameEngine engine) throws IOException {
+    public Bullet(float x, float y, Vector2d velocity, int allience, GameEngine engine) throws IOException {
         this.position = new Vector2d(x, y);
-        this.rotation = 0;
         this.allience = allience;
-        this.v = new Vector2d(0, -velocity);
+        this.v = velocity;
+        this.rotation = 0;
 
         Image img = new Image(App.class.getResource("playerBulletSprite.png").openStream());
         this.sprite = new ImageView(img);
@@ -72,18 +72,26 @@ public class Bullet implements GameObject{
         //update collidera
         this.collider.update(this.position, this.rotation);
 
+        //ustawianie rotacji
+        this.rotation = (float)Math.toDegrees(this.v.angleBetween(new Vector2d(0,-1)));
+        this.sprite.setRotate(this.rotation);
+
     }
 
 
     public boolean checkHit(List<GameObject> objects) {
         for(GameObject object : objects){
-            if(this != object && this.collider.isCollision(object.getCollider())){
+            if(this != object && !object.getType().equals("Bullet") && this.collider.isCollision(object.getCollider())){
                 //jesli jest to pocisk od sojusznika, to nie jest szkodliwy
                 if(this.allience != object.getAlliance()){
                     this.engine.getPane().getChildren().remove(this.sprite);
                     return true;
                 }
             }
+        }
+        if(isHit()){
+            this.engine.getPane().getChildren().remove(this.sprite);
+            return true;
         }
         return false;
     }
@@ -109,6 +117,9 @@ public class Bullet implements GameObject{
         //w przeciwnym przypadku
         return false;
 
+    }
+    public String getType(){
+        return "Bullet";
     }
 
 

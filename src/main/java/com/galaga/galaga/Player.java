@@ -133,7 +133,7 @@ public class Player implements GameObject{
             if(Duration.between(this.start, this.end).toMillis() > this.fireDuration){
                 this.start = Instant.now();
                 try {
-                    Bullet bullet = new Bullet(this.position.x, this.position.y, 10, 0, this.engine);
+                    Bullet bullet = new Bullet(this.position.x, this.position.y, new Vector2d(0,-10), 0, this.engine);
                 }
                 catch (IOException e){
                     e.printStackTrace();
@@ -151,8 +151,9 @@ public class Player implements GameObject{
 
     public boolean checkHit(List<GameObject> objects) {
         for(GameObject object : objects){
-            if(this != object && this.collider.isCollision(object.getCollider())){
-                return false;
+            if(this != object && object.getAlliance() != 0 && this.collider.isCollision(object.getCollider())){
+                this.hp -= 1;
+                return isDead();
             }
         }
         return false;
@@ -164,6 +165,10 @@ public class Player implements GameObject{
 
     public int getAlliance(){
         return 0;
+    }
+
+    public String getType(){
+        return "Player";
     }
 
 

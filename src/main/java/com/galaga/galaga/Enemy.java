@@ -7,7 +7,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 
 
 public class Enemy implements GameObject{
@@ -19,6 +22,8 @@ public class Enemy implements GameObject{
     private Vector2d dockPosition;
     private Vector2d velocity;
     private float v;
+
+    private float fireDuration;
     private float rotation = 0;
 
     //stopnie obrotu
@@ -32,6 +37,9 @@ public class Enemy implements GameObject{
 
     private float width;
     private float height;
+
+    private Instant start;
+    private  Instant end;
 
 
 
@@ -49,9 +57,9 @@ public class Enemy implements GameObject{
         this.velocity = new Vector2d(0, 4);
         this.v = this.velocity.module();
 
-        this.actualAction = this.behavior.getNext();
+        this.fireDuration = 1500;
 
-        //this.circle = new Circle(this.position.x, this.position.y, 10, Color.RED);
+        this.actualAction = this.behavior.getNext();
 
         Image img = new Image(App.class.getResource("enemy1.png").openStream());
         this.sprite = new ImageView(img);
@@ -67,6 +75,8 @@ public class Enemy implements GameObject{
                                     new Vector2d(this.width/2, this.height),
                                     new Vector2d(this.width,0), this.rotation);
 
+        //do strzelania
+        this.start = Instant.now();
 
 
         this.engine.getPane().getChildren().addAll(this.sprite);
@@ -188,6 +198,21 @@ public class Enemy implements GameObject{
         //ustawiam rotacje
         this.sprite.setRotate(this.rotation);
 
+        //strzelanie
+        this.end = Instant.now();
+        //60% szans na strzelenie
+        if(this.randomInt(1, 10) < 3){
+            if(Duration.between(this.start, this.end).toMillis() > this.fireDuration){
+                try{
+                    Bullet bullet = new Bullet(this.position.x, this.position.y, this.velocity.toUnitModule().multiply(5), this.getAlliance(), this.engine);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                }
+                //zerowanie licznika
+                this.start = Instant.now();
+            }
+        }
 
 
         //update collidera
@@ -215,6 +240,18 @@ public class Enemy implements GameObject{
 
     public Collider getCollider(){
         return this.collider;
+    }
+
+
+    //funkcja zwraca pseudolosowa liczbe calkowita z przedzialu <min, max>
+    public int randomInt(int min, int max){
+        Random rand = new Random();
+        return rand.nextInt((max - min) + 1) + min;
+    }
+
+
+    public String getType(){
+        return "Enemy";
     }
 
 

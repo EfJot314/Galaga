@@ -70,6 +70,14 @@ public class Vector2d {
         return (float)(Math.sqrt(this.x*this.x + this.y*this.y));
     }
 
+    public Vector2d toUnitModule(){
+        float module = this.module();
+
+        float sin = this.y / module;
+        float cos = this.x / module;
+
+        return new Vector2d(cos, sin);
+    }
 
     public String toString(){
         String toReturn = "";

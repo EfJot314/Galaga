@@ -9,6 +9,7 @@ public interface GameObject {
     int getAlliance();
 
     Collider getCollider();
+    String getType();
     boolean checkHit(List<GameObject> objects);
 
 

@@ -82,7 +82,7 @@ public class GameEngine extends Thread{
     }
 
     public void removeBullet(Bullet bullet){
-        this.toRemove.remove(bullet);
+        this.toRemove.add(bullet);
     }
 
 
@@ -101,7 +101,7 @@ public class GameEngine extends Thread{
         Behavior behavior = new Behavior(null);
 
         //tworzenie wroga
-        Enemy newEnemy = new Enemy(new Vector2d(0,0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        Enemy newEnemy = new Enemy(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
         this.occupiedTab[x][y] = true;
         this.toAdd.add(newEnemy);
         nOfEnemies += 1;
