@@ -227,6 +227,13 @@ public class Enemy implements GameObject{
                 //jesli jest to pocisk od sojusznika, to nie jest szkodliwy
                 if(1 != object.getAlliance()){
                     this.engine.getPane().getChildren().remove(this.sprite);
+                    for(int i=0;i<this.engine.enemiesWidth;i++){
+                        for(int j=0;j<this.engine.enemiesHeight;j++){
+                            if(this.engine.positionsTab[i][j].equals(this.dockPosition)){
+                                this.engine.occupiedTab[i][j] = false;
+                            }
+                        }
+                    }
                     return true;
                 }
             }

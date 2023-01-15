@@ -99,6 +99,9 @@ public class Player implements GameObject{
             }
         });
 
+
+        this.engine.updateHealth(this.hp);
+
     }
 
 
@@ -149,10 +152,15 @@ public class Player implements GameObject{
     }
 
 
-    public boolean checkHit(List<GameObject> objects) {
+    public boolean checkHit(List<GameObject> objects){
         for(GameObject object : objects){
             if(this != object && object.getAlliance() != 0 && this.collider.isCollision(object.getCollider())){
                 this.hp -= 1;
+                try {
+                    this.engine.updateHealth(this.hp);
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
                 return isDead();
             }
         }

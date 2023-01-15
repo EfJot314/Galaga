@@ -7,6 +7,8 @@ import javafx.animation.Timeline;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -28,11 +30,13 @@ public class GameEngine extends Thread{
     private List<GameObject> toAdd;
     private List<GameObject> toRemove;
 
-    private int enemiesWidth = 4;
-    private int enemiesHeight = 4;
+    public final int enemiesWidth = 4;
+    public final int enemiesHeight = 4;
     private int nOfEnemies = 0;
-    private galaga.Vector2d[][] positionsTab;
-    private boolean[][] occupiedTab;
+    public galaga.Vector2d[][] positionsTab;
+    public boolean[][] occupiedTab;
+
+    private ImageView[] hearts;
 
     private Timeline tl;
 
@@ -44,6 +48,10 @@ public class GameEngine extends Thread{
         this.allObjects = new ArrayList<>();
         this.toAdd = new ArrayList<>();
         this.toRemove = new ArrayList<>();
+
+
+        //zdrowie
+        this.hearts = new ImageView[3];
 
         this.player = new Player(this);
         this.allObjects.add(player);
@@ -61,11 +69,7 @@ public class GameEngine extends Thread{
             }
         }
 
-        //testowe enemy
-        for(int i=0;i<10;i++){
-            this.createEnemy();
 
-        }
 
     }
 
@@ -81,8 +85,11 @@ public class GameEngine extends Thread{
         this.toAdd.add(bullet);
     }
 
-    public void removeBullet(Bullet bullet){
-        this.toRemove.add(bullet);
+
+    private void enemyWaive(int n) throws IOException {
+        for(int i=0;i<n;i++){
+            this.createEnemy();
+        }
     }
 
 
@@ -107,10 +114,30 @@ public class GameEngine extends Thread{
         nOfEnemies += 1;
     }
 
+    public void updateHealth(int n) throws IOException {
+        for(int i=0;i<3;i++){
+            this.pane.getChildren().remove(this.hearts[i]);
+            this.hearts[i] = null;
 
+        }
+        for(int i=0;i<n;i++){
+            Image img = new Image(App.class.getResource("heart.png").openStream());
+            this.hearts[i] = new ImageView(img);
+            this.hearts[i].setX(i*33+15);
+            this.hearts[i].setY(15);
+            this.hearts[i].setFitWidth(30);
+            this.hearts[i].setFitHeight(30);
+            this.pane.getChildren().add(this.hearts[i]);
+        }
+    }
 
 
     private void mainLoop() throws IOException {
+
+        //fale przeciwnikow
+        if(nOfEnemies <= 0){
+            this.enemyWaive(10);
+        }
 
         //wszystko sie ruszaja
         for(GameObject object : allObjects){
@@ -129,7 +156,12 @@ public class GameEngine extends Thread{
         //usuwanie zmarlych
         for(GameObject object : toRemove){
             this.allObjects.remove(object);
+            if(object.getType().equals("Enemy")){
+                nOfEnemies -= 1;
+            }
         }
+
+
 
         this.toAdd = new ArrayList<>();
         this.toRemove = new ArrayList<>();
