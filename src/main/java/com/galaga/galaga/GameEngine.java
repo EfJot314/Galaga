@@ -108,7 +108,7 @@ public class GameEngine extends Thread{
         Behavior behavior = new Behavior(null);
 
         //tworzenie wroga
-        Enemy newEnemy = new Enemy(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        GameObject newEnemy = new Enemy2(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
         this.occupiedTab[x][y] = true;
         this.toAdd.add(newEnemy);
         nOfEnemies += 1;

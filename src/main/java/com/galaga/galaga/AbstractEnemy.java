@@ -3,8 +3,6 @@ package com.galaga.galaga;
 import galaga.Vector2d;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -13,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class Enemy implements GameObject{
+public abstract class AbstractEnemy implements GameObject{
 
     private GameEngine engine;
     private Collider collider;
@@ -23,6 +21,7 @@ public class Enemy implements GameObject{
     private Vector2d velocity;
     private float v;
 
+    private boolean canFire;
     private float fireDuration;
     private float rotation = 0;
 
@@ -43,7 +42,10 @@ public class Enemy implements GameObject{
 
 
 
-    public Enemy(Vector2d startPosition, Vector2d dockPosition, galaga.Vector2d velocity, GameEngine engine, Behavior behavior) throws IOException {
+    public AbstractEnemy(Vector2d startPosition, Vector2d dockPosition,
+                         galaga.Vector2d velocity, GameEngine engine,
+                         Behavior behavior, String src, boolean canFire) throws IOException {
+
         this.engine = engine;
 
         this.behavior = behavior;
@@ -57,15 +59,13 @@ public class Enemy implements GameObject{
         this.velocity = new Vector2d(0, 4);
         this.v = this.velocity.module();
 
+
+        this.canFire = canFire;
         this.fireDuration = 1500;
 
         this.actualAction = this.behavior.getNext();
 
-        Image img = new Image(App.class.getResource("enemy1.png").openStream());
-        this.sprite = new ImageView(img);
-        this.sprite.setPreserveRatio(true);
-        this.sprite.setFitWidth(20);
-        this.sprite.setFitHeight(20);
+        this.createSprite(src);
 
         this.width = (float)this.sprite.getFitWidth();
         this.height = (float)this.sprite.getFitHeight();
@@ -108,6 +108,14 @@ public class Enemy implements GameObject{
         this.sprite.setY(this.position.y);
     }
 
+
+    private void createSprite(String src) throws IOException {
+        Image img = new Image(App.class.getResource(src).openStream());
+        this.sprite = new ImageView(img);
+        this.sprite.setPreserveRatio(true);
+        this.sprite.setFitWidth(20);
+        this.sprite.setFitHeight(20);
+    }
 
     public void move(){
 
@@ -201,7 +209,7 @@ public class Enemy implements GameObject{
         //strzelanie
         this.end = Instant.now();
         //60% szans na strzelenie
-        if(this.randomInt(1, 10) < 3){
+        if(this.canFire && this.randomInt(1, 10) < 3){
             if(Duration.between(this.start, this.end).toMillis() > this.fireDuration){
                 try{
                     Bullet bullet = new Bullet(this.position.x, this.position.y, this.velocity.toUnitModule().multiply(5), this.getAlliance(), this.engine);
