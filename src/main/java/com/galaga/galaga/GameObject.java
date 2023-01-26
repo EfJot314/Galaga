@@ -12,6 +12,8 @@ public interface GameObject {
     String getType();
     boolean checkHit(List<GameObject> objects);
 
+    int getScorePoints();
+
 
 
 

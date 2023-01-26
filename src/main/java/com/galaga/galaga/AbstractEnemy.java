@@ -40,6 +40,8 @@ public abstract class AbstractEnemy implements GameObject{
     private Instant start;
     private  Instant end;
 
+    public int scorePoints;
+
 
 
     public AbstractEnemy(Vector2d startPosition, Vector2d dockPosition,
@@ -80,6 +82,8 @@ public abstract class AbstractEnemy implements GameObject{
 
 
         this.engine.getPane().getChildren().addAll(this.sprite);
+
+        this.scorePoints = 20;
     }
 
     public void moveShip(){
@@ -262,6 +266,11 @@ public abstract class AbstractEnemy implements GameObject{
     public int randomInt(int min, int max){
         Random rand = new Random();
         return rand.nextInt((max - min) + 1) + min;
+    }
+
+
+    public int getScorePoints(){
+        return this.scorePoints;
     }
 
 

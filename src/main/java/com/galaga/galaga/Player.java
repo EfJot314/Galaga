@@ -44,6 +44,9 @@ public class Player implements GameObject{
     private Instant end;
 
 
+    private int scorePoints;
+
+
     public Player(GameEngine engine) throws IOException {
 
         this.start = Instant.now();
@@ -98,6 +101,8 @@ public class Player implements GameObject{
                 fire = false;
             }
         });
+
+        this.scorePoints = 0;
 
 
         this.engine.updateHealth(this.hp);
@@ -165,6 +170,10 @@ public class Player implements GameObject{
             }
         }
         return false;
+    }
+
+    public int getScorePoints(){
+        return this.scorePoints;
     }
 
     public Collider getCollider(){

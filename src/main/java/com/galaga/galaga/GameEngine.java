@@ -6,12 +6,18 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
@@ -23,6 +29,8 @@ import java.util.Random;
 
 public class GameEngine extends Thread{
     private Pane pane;
+
+    private StackPane textPane;
     private Scene scene;
     private Player player;
 
@@ -37,13 +45,32 @@ public class GameEngine extends Thread{
     public boolean[][] occupiedTab;
 
     private ImageView[] hearts;
+    private Label scoreLabel;
 
     private Timeline tl;
 
+    public boolean gameOver = false;
 
-    public GameEngine(Pane p, Scene s) throws IOException {
-        this.pane = p;
+    private int score = 0;
+
+
+    public GameEngine(StackPane p, Scene s) throws IOException {
+        this.gameOver = false;
+        this.score = 0;
+
+        this.textPane = p;
+        this.pane = new Pane();
         this.scene = s;
+
+        this.textPane.getChildren().add(this.pane);
+
+        this.scoreLabel = new Label();
+        this.scoreLabel.setFont(new Font(25));
+        this.scoreLabel.setTextFill(Color.WHITE);
+        VBox scoreBox = new VBox(this.scoreLabel);
+        scoreBox.setAlignment(Pos.TOP_RIGHT);
+        this.textPane.getChildren().add(scoreBox);
+        this.updateScore(0);
 
         this.allObjects = new ArrayList<>();
         this.toAdd = new ArrayList<>();
@@ -86,6 +113,15 @@ public class GameEngine extends Thread{
     }
 
 
+    private void updateScore(int dS){
+        //dodaje punkty do calosciowego score-a
+        this.score += dS;
+        String actText = "Score: ";
+        actText += this.score;
+        //update-uje napis na ekranie
+        this.scoreLabel.setText(actText);
+    }
+
     private void enemyWaive(int n) throws IOException {
         for(int i=0;i<n;i++){
             this.createEnemy();
@@ -108,65 +144,98 @@ public class GameEngine extends Thread{
         Behavior behavior = new Behavior(null);
 
         //tworzenie wroga
-        GameObject newEnemy = new Enemy2(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        GameObject newEnemy = null;
+        if(this.randomInt(1,10) > 2) {
+            newEnemy = new Enemy2(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        }
+        else{
+            newEnemy = new Enemy1(new Vector2d((float)(this.scene.getWidth()/2),0), this.positionsTab[x][y], new Vector2d(0,0), this, behavior);
+        }
         this.occupiedTab[x][y] = true;
         this.toAdd.add(newEnemy);
         nOfEnemies += 1;
     }
 
     public void updateHealth(int n) throws IOException {
+        //usuwanie serduszek
         for(int i=0;i<3;i++){
             this.pane.getChildren().remove(this.hearts[i]);
             this.hearts[i] = null;
+        }
+        //sprawdzanie czy jeszcze jest zycie
+        if(n > 0){
+            //tworzenie nowych
+            for(int i=0;i<n;i++){
+                Image img = new Image(App.class.getResource("heart.png").openStream());
+                this.hearts[i] = new ImageView(img);
+                this.hearts[i].setX(i*33+15);
+                this.hearts[i].setY(15);
+                this.hearts[i].setFitWidth(30);
+                this.hearts[i].setFitHeight(30);
+                this.pane.getChildren().add(this.hearts[i]);
+            }
+        }
+        //jesli ma 0 zyc to przegral
+        else{
+            this.gameOver = true;
+            //napis
+            String goText = "Game Over";
+            Label gameOverLabel = new Label(goText);
+            gameOverLabel.setFont(new Font(60));
+            gameOverLabel.setTextFill(Color.RED);
+            gameOverLabel.setAlignment(Pos.CENTER);
+            VBox gameOverBox = new VBox(gameOverLabel);
+            gameOverBox.getChildren().add(this.scoreLabel);
+            gameOverBox.setAlignment(Pos.CENTER);
+            this.textPane.getChildren().add(gameOverBox);
+        }
 
-        }
-        for(int i=0;i<n;i++){
-            Image img = new Image(App.class.getResource("heart.png").openStream());
-            this.hearts[i] = new ImageView(img);
-            this.hearts[i].setX(i*33+15);
-            this.hearts[i].setY(15);
-            this.hearts[i].setFitWidth(30);
-            this.hearts[i].setFitHeight(30);
-            this.pane.getChildren().add(this.hearts[i]);
-        }
     }
 
 
     private void mainLoop() throws IOException {
+        if(!this.gameOver){
 
-        //fale przeciwnikow
-        if(nOfEnemies <= 0){
-            this.enemyWaive(10);
-        }
-
-        //wszystko sie ruszaja
-        for(GameObject object : allObjects){
-            object.move();
-        }
-        //uruchamianie colliderow
-        for(GameObject object : allObjects){
-            if(object.checkHit(allObjects)){
-                this.toRemove.add(object);
+            //fale przeciwnikow
+            if(nOfEnemies <= 1){
+                this.enemyWaive(10);
             }
-        }
-        //dodawanie nowych
-        for(GameObject object : toAdd){
-            this.allObjects.add(object);
-        }
-        //usuwanie zmarlych
-        for(GameObject object : toRemove){
-            this.allObjects.remove(object);
-            if(object.getType().equals("Enemy")){
-                nOfEnemies -= 1;
+
+            //wszystko sie ruszaja
+            for(GameObject object : allObjects){
+                object.move();
             }
+            //uruchamianie colliderow
+            for(GameObject object : allObjects){
+                if(object.checkHit(allObjects)){
+                    //jesli to nie jest gracz to daje do usuniecia
+                    if(!object.getType().equals("Player")){
+                        this.toRemove.add(object);
+                        //update-uje score
+                        this.updateScore(object.getScorePoints());
+                    }
+                }
+            }
+            //dodawanie nowych
+            for(GameObject object : toAdd){
+                this.allObjects.add(object);
+            }
+            //usuwanie zmarlych
+            for(GameObject object : toRemove){
+                this.allObjects.remove(object);
+                if(object.getType().equals("Enemy")){
+                    nOfEnemies -= 1;
+                }
+            }
+
+
+
+            this.toAdd = new ArrayList<>();
+            this.toRemove = new ArrayList<>();
+
+
+
         }
-
-
-
-        this.toAdd = new ArrayList<>();
-        this.toRemove = new ArrayList<>();
-
-
 
     }
 

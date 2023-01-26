@@ -32,6 +32,9 @@ public class Bullet implements GameObject{
     private float rotation;
     private int allience;
 
+
+    private int scorePoints;
+
     public Bullet(float x, float y, Vector2d velocity, int allience, GameEngine engine) throws IOException {
         this.position = new Vector2d(x, y);
         this.allience = allience;
@@ -60,6 +63,8 @@ public class Bullet implements GameObject{
 
         this.engine.addBullet(this);
         this.engine.getPane().getChildren().addAll(this.sprite);
+
+        this.scorePoints = 0;
     }
 
     public void move(){
@@ -118,6 +123,12 @@ public class Bullet implements GameObject{
         return false;
 
     }
+
+    public int getScorePoints(){
+        return this.scorePoints;
+    }
+
+
     public String getType(){
         return "Bullet";
     }
